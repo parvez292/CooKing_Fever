@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kitchen Fever | Futuristic Recipe Website</title>
+  <meta name="description" content="Kitchen Fever - একটি ফিউচারিস্টিক রেসিপি ওয়েবসাইট যেখানে ছবিসহ রেটিং, উপকরণ ও প্রস্তুত প্রণালী সুন্দর অ্যানিমেশনসহ দেখা যাবে।" />
+  <meta name="theme-color" content="#0b1020" />
+  <style>
+    /* -----------------------------------------------------------
+       থিমিং + কালার ভ্যারিয়েবল (ডার্ক ডিফল্ট + লাইট থিম)
+       -----------------------------------------------------------
+       নোট: সব কালার/শ্যাডো/গ্রেডিয়েন্ট CSS ভ্যারিয়েবলের মাধ্যমে
+       কন্ট্রোল করা হয়েছে যাতে থিম বদলাতে সহজ হয়।
+    */
+    :root {
+      --bg-1: #0b1020; /* ডার্ক ব্যাকগ্রাউন্ড ১ */
+      --bg-2: #111a33; /* ডার্ক ব্যাকগ্রাউন্ড ২ */
+      --text: #eaf2ff; /* প্রাইমারি টেক্সট কালার */
+      --muted: #a7b4d6; /* সেকেন্ডারি টেক্সট কালার */
+      --card: rgba(255, 255, 255, 0.06); /* গ্লাস কার্ড ব্যাকগ্রাউন্ড */
+      --card-border: rgba(255, 255, 255, 0.12);
+      --card-hover: rgba(255, 255, 255, 0.1);
+      --accent: #00e5ff;        /* সায়ান নীয়ন */
+      --accent-2: #ff3d81;      /* পিংক নীয়ন */
+      --accent-3: #7cffc1;      /* মিন্ট */
+      --shadow-strong: 0 20px 50px -20px rgba(0, 229, 255, 0.25);
+      --shadow-soft: 0 10px 30px -15px rgba(0, 0, 0, 0.4);
+      --ring: 0 0 0 0 rgba(0,229,255,0); /* ফোকাস রিং ডায়নামিক */
+      --link: #9ad8ff;
+      --success: #98ff7a;
+      --warn: #ffd166;
+      --danger: #ff6b6b;
+    }
+
+    /* লাইট থিম সেটিংস: data-theme="light" হলে নিচের ভ্যারিয়েবল সক্রিয় হবে */
+    body[data-theme="light"] {
+      --bg-1: #f5f8ff;
+      --bg-2: #eef3ff;
+      --text: #0e1a2f;
+      --muted: #42547b;
+      --card: rgba(255, 255, 255, 0.7);
+      --card-border: rgba(20, 30, 60, 0.12);
+      --card-hover: rgba(255,255,255,0.9);
+      --accent: #0077ff;
+      --accent-2: #ff2e6a;
+      --accent-3: #00c389;
+      --shadow-strong: 0 20px 50px -20px rgba(0, 119, 255, 0.2);
+      --shadow-soft: 0 10px 30px -15px rgba(0, 0, 0, 0.08);
+      --link: #0054c4;
+      --success: #2bb673;
+      --warn: #f6a40b;
+      --danger: #e53935;
+    }
+
+    /* -----------------------------------------------------------
+       বেসিক স্টাইল + অ্যানিমেটেড ব্যাকগ্রাউন্ড
+       ----------------------------------------------------------- */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(0, 229, 255, 0.08), transparent),
+                  radial-gradient(1000px 600px at 110% 10%, rgba(255, 61, 129, 0.08), transparent),
+                  linear-gradient(115deg, var(--bg-1), var(--bg-2));
+      overflow-x: hidden;
+      transition: background 0.6s ease, color 0.3s ease;
+      position: relative;
+    }
+
+    /* ব্যাকগ্রাউন্ড গ্রেডিয়েন্ট অ্যানিমেশন */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -10%;
+      background: linear-gradient(120deg,
+                  rgba(0, 229, 255, 0.05),
+                  rgba(255, 61, 129, 0.05),
+                  rgba(124, 255, 193, 0.04));
+      background-size: 300% 300%;
+      animation: bgShift 20s ease infinite;
+      z-index: -2;
+    }
+    @keyframes bgShift {
+      0% { transform: translate3d(0,0,0); filter: hue-rotate(0deg); }
+      50% { transform: translate3d(0, -2%, 0); filter: hue-rotate(15deg); }
+      100% { transform: translate3d(0,0,0); filter: hue-rotate(0deg); }
+    }
+
+    /* সূক্ষ্ম গ্রিড প্যাটার্ন */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 25% 20%, rgba(255,255,255,0.06) 0, transparent 35%),
+        radial-gradient(circle at 75% 80%, rgba(0,0,0,0.12) 0, transparent 40%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03) 1px, transparent 1px, transparent 16px);
+      pointer-events: none;
+      mix-blend-mode: overlay;
+      z-index: -1;
+    }
+
+    /* বাবল অ্যানিমেশন ক্যানভাস */
+    #bubbleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* কন্টেইনার */
+    .container {
+      width: min(1200px, 92vw);
+      margin: 0 auto;
+      padding: 32px 0 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* -----------------------------------------------------------
+       হেডার + ব্র্যান্ড + থিম টগল + কন্ট্যাক্ট
+       ----------------------------------------------------------- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: saturate(150%) blur(10px);
+      background: linear-gradient(180deg, rgba(0,0,0,0.25), transparent);
+      border-bottom: 1px solid var(--card-border);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo {
+      width: 42px; height: 42px; border-radius: 50%;
+      background:
+        conic-gradient(from 180deg, var(--accent), var(--accent-2), var(--accent-3), var(--accent));
+      box-shadow: 0 0 20px rgba(0,229,255,0.35), inset 0 0 10px rgba(255, 255, 255, 0.3);
+      border: 1px solid var(--card-border);
+      position: relative;
+      overflow: hidden;
+      animation: logoRotate 10s linear infinite;
+    }
+    @keyframes logoRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .logo::after {
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(80% 80% at 30% 30%, rgba(255,255,255,0.4), transparent 60%);
+      mix-blend-mode: soft-light;
+      opacity: .7;
+    }
+
+    .title {
+      font-weight: 800;
+      font-size: clamp(20px, 3vw, 28px);
+      letter-spacing: 0.4px;
+      margin: 0;
+      line-height: 1.2;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent; /* হাইলাইটেড গ্রেডিয়েন্ট টেক্সট */
+      text-shadow: 0 8px 35px rgba(0,229,255,0.25);
+    }
+    .subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: -2px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* -----------------------------------------------------------
+       বোতাম (নীয়ন গ্লো + হোভার শাইন) — বিশেষ হোভার ইফেক্ট
+       ----------------------------------------------------------- */
+    .btn {
+      --glow: var(--accent);
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 12px;
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,0.25);
+      box-shadow: var(--shadow-strong);
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+    }
+    .btn:active { transform: translateY(0); }
+
+    /* নীয়ন রিং ইফেক্ট */
+    .btn::before {
+      content:"";
+      position:absolute;
+      inset:-2px;
+      z-index:-1;
+      background: conic-gradient(from 0, var(--glow), transparent 20%, var(--accent-2), transparent 60%, var(--accent-3), transparent 80%, var(--glow));
+      filter: blur(14px);
+      opacity: 0;
+      transition: opacity .25s ease, transform .25s ease;
+      border-radius: inherit;
+    }
+    .btn:hover::before { opacity: .7; }
+    .btn:focus-visible {
+      outline: none;
+      box-shadow: var(--shadow-strong), 0 0 0 3px rgba(0,229,255,0.35);
+    }
+
+    /* শাইন ইফেক্ট */
+    .btn .shine {
+      position: absolute; inset: -30% -50%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent);
+      transform: translateX(-60%) rotate(15deg);
+      transition: transform .7s ease;
+      pointer-events: none;
+    }
+    .btn:hover .shine { transform: translateX(60%) rotate(15deg); }
+
+    /* থিম টগল আইকন সাইজ */
+    .icon { width: 18px; height: 18px; }
+
+    /* -----------------------------------------------------------
+       হাইলাইটেড টেক্সট সিস্টেম (ডেভেলপার চাইলে যেকোনো টেক্সটে লাগাতে পারবেন)
+       ----------------------------------------------------------- */
+    .hl {
+      background: linear-gradient(90deg, rgba(0,229,255,0.25), rgba(255,61,129,0.25));
+      padding: 0 .3em;
+      border-radius: .35em;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+    .hl-glow {
+      text-shadow: 0 0 12px rgba(0,229,255,0.4), 0 0 24px rgba(255,61,129,0.25);
+    }
+
+    /* -----------------------------------------------------------
+       সার্চ বার
+       ----------------------------------------------------------- */
+    .searchbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin: 20px 0 10px;
+      align-items: center;
+    }
+    .search-input {
+      height: 44px;
+      padding: 0 14px 0 42px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      background: var(--card);
+      color: var(--text);
+      outline: none;
+      backdrop-filter: blur(6px);
+      transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23a7b4d6" viewBox="0 0 24 24"><path d="M10 3a7 7 0 015.292 11.708l4 4a1 1 0 11-1.414 1.414l-4-4A7 7 0 1110 3zm0 2a5 5 0 100 10 5 5 0 000-10z"/></svg>');
+      background-repeat: no-repeat;
+      background-size: 18px;
+      background-position: 12px center;
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .search-input:focus {
+      border-color: rgba(0,229,255,0.5);
+      box-shadow: 0 0 0 3px rgba(0,229,255,0.25);
+      background: var(--card-hover);
+    }
+
+    /* -----------------------------------------------------------
+       রেসিপি গ্রিড + কার্ড (গ্লাসমরফিক + গ্রেডিয়েন্ট বর্ডার)
+       ----------------------------------------------------------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+      margin-top: 16px;
+    }
+
+    .recipe-card {
+      position: relative;
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.02));
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: clip;
+      box-shadow: var(--shadow-soft);
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease;
+      transform: translateZ(0);
+      will-change: transform;
+    }
+    .recipe-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-strong);
+      border-color: rgba(255,255,255,0.2);
+      background: linear-gradient(180deg, var(--card-hover), rgba(255,255,255,0.06));
+    }
+
+    .card-media {
+      position: relative; aspect-ratio: 16/10; background: #0b0f1a;
+    }
+    .card-media img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: saturate(1.05) contrast(1.02);
+      transition: transform .5s ease;
+    }
+    .recipe-card:hover .card-media img { transform: scale(1.04); }
+
+    /* রেটিং ব্যাজ */
+    .rating-badge {
+      position: absolute; top: 10px; left: 10px;
+      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.35);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.15);
+      display: inline-flex; align-items: center; gap: 6px;
+      font-weight: 600; font-size: 12px;
+      box-shadow: 0 6px 18px -8px rgba(0,0,0,0.5);
+    }
+    body[data-theme="light"] .rating-badge {
+      background: rgba(255,255,255,0.7);
+      color: #0e1a2f;
+    }
+    .rating-badge svg { width: 14px; height: 14px; }
+
+    .card-body {
+      padding: 14px 14px 6px;
+      display: grid; gap: 8px;
+    }
+    .recipe-title {
+      font-size: 18px; margin: 0; line-height: 1.35; font-weight: 700;
+    }
+    .meta {
+      display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      padding: 4px 8px; border-radius: 999px; border: 1px solid var(--card-border);
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* স্টার রেটিং ভিজ্যুয়াল */
+    .stars { display: inline-flex; gap: 2px; vertical-align: middle; }
+    .stars svg { width: 16px; height: 16px; }
+
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 12px 14px 16px;
+    }
+
+    /* বিস্তারিত বাটন */
+    .btn-detail {
+      --glow: var(--accent-2);
+      font-weight: 700;
+    }
+
+    /* নো-রেজাল্টস */
+    .empty {
+      text-align: center; color: var(--muted); padding: 22px; border: 1px dashed var(--card-border); border-radius: 12px;
+      background: var(--card);
+    }
+
+    /* -----------------------------------------------------------
+       ফুটার
+       ----------------------------------------------------------- */
+    footer {
+      margin-top: 36px;
+      padding: 18px 0 40px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .signature {
+      font-weight: 800;
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      background: linear-gradient(90deg, rgba(0,229,255,0.14), rgba(255,61,129,0.14));
+      color: var(--text);
+      box-shadow: 0 12px 30px -18px rgba(0,229,255,0.4);
+    }
+
+    /* -----------------------------------------------------------
+       রেসিপি ডিটেইলস মোডাল (ফুল স্ক্রিন)
+       ----------------------------------------------------------- */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100;
+      background: linear-gradient(135deg, 
+                  rgba(0, 229, 255, 0.2), 
+                  rgba(255, 61, 129, 0.2), 
+                  rgba(124, 255, 193, 0.2));
+      backdrop-filter: blur(8px);
+      animation: modalFadeIn 0.4s ease;
+      overflow-y: auto;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-content {
+      max-width: 900px;
+      margin: 40px auto;
+      background: linear-gradient(135deg, 
+                  rgba(11, 16, 32, 0.9), 
+                  rgba(17, 26, 51, 0.9));
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 25px 60px -20px rgba(0, 229, 255, 0.3);
+      overflow: hidden;
+      animation: modalSlideIn 0.5s ease;
+    }
+    @keyframes modalSlideIn {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      padding: 20px 30px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title {
+      font-size: 28px;
+      margin: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 24px;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s ease;
+    }
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .modal-body {
+      padding: 30px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    .modal-section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--card-border);
+    }
+    .modal-section h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: var(--accent);
+      font-size: 20px;
+    }
+    .modal-section ul, .modal-section ol {
+      padding-left: 20px;
+    }
+    .modal-section li {
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+    .modal-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+    .modal-footer {
+      padding: 20px 30px;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .modal-rating {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .modal-rating .stars {
+      font-size: 20px;
+    }
+    .modal-meta {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .modal-meta .chip {
+      font-size: 14px;
+    }
+
+    /* -----------------------------------------------------------
+       নতুন ফিচার: ফ্লোটিং অ্যাকশন বাটন (FAB)
+       ----------------------------------------------------------- */
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 50;
+    }
+    .fab.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .fab:hover {
+      background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
+    }
+    .fab svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* -----------------------------------------------------------
+       নতুন ফিচার: ফিল্টার বাটনস
+       ----------------------------------------------------------- */
+    .filter-container {
+      display: flex;
+      gap: 10px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-btn:hover {
+      background: var(--card-hover);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .filter-btn.active {
+      background: var(--accent);
+      color: var(--bg-1);
+      border-color: var(--accent);
+    }
+
+    /* -----------------------------------------------------------
+       নতুন ফিচার: সর্ট ড্রপডাউন
+       ----------------------------------------------------------- */
+    .sort-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .sort-dropdown {
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+    }
+    .sort-dropdown:focus {
+      border-color: var(--accent);
+    }
+
+    /* -----------------------------------------------------------
+       নতুন ফিচার: ফেভারিট বাটন
+       ----------------------------------------------------------- */
+    .favorite-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 2;
+    }
+    .favorite-btn:hover {
+      background: rgba(255, 61, 129, 0.3);
+      transform: scale(1.1);
+    }
+    .favorite-btn.active {
+      background: rgba(255, 61, 129, 0.5);
+    }
+    .favorite-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2;
+      transition: all 0.2s ease;
+    }
+    .favorite-btn.active svg {
+      fill: white;
+    }
+
+    /* -----------------------------------------------------------
+       নতুন ফিচার: মোডাল অ্যাকশন বাটনস
+       ----------------------------------------------------------- */
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .modal-action-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .modal-action-btn:hover {
+      background: var(--card-hover);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .modal-action-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* -----------------------------------------------------------
+       নতুন ফিচার: টুলটিপ
+       ----------------------------------------------------------- */
+    .tooltip {
+      position: relative;
+    }
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-2);
+      color: var(--text);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-soft);
+    }
+    .tooltip:hover::after {
+      opacity: 1;
+    }
+
+    /* -----------------------------------------------------------
+       স্ক্রল-রিভিল অ্যানিমেশন (কার্ড ভিউপোর্টে এলে ফেড/লিফট)
+       ----------------------------------------------------------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(10px) scale(.98);
+      transition: opacity .5s ease, transform .6s cubic-bezier(.2, .8, .2, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* মোশন-সেফ (পছন্দ অনুযায়ী কম মোশন) */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+
+    /* ছোট ডিভাইস টিউনিং */
+    @media (max-width: 768px) {
+      .modal-body {
+        grid-template-columns: 1fr;
+      }
+      .modal-content {
+        margin: 20px;
+      }
+      .modal-header, .modal-body, .modal-footer {
+        padding: 20px;
+      }
+      .filter-container, .sort-container {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- বাবল অ্যানিমেশন ক্যানভাস -->
+  <canvas id="bubbleCanvas"></canvas>
+
+  <!-- ===========================================================
+       হেডার: ব্র্যান্ড + সার্চ + থিম টগল + টেলিগ্রাম কন্ট্যাক্ট
+       =========================================================== -->
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1 class="title hl-glow">CooKing Fever</h1>
+          <div class="subtitle">Comes With Premium Recipe Collection</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <!-- থিম টগল: ডিফল্ট ডার্ক, বাটনে ক্লিক করলে লাইট/ডার্ক পাল্টাবে -->
+        <button id="themeToggle" class="btn" type="button" aria-label="থিম পরিবর্তন (ডার্ক/লাইট)">
+          <span class="shine"></span>
+          <svg class="icon" id="themeIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <!-- ডিফল্ট: চাঁদ (ডার্ক থিম) -->
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+          <span>থিম</span>
+        </button>
+
+        <!-- টেলিগ্রাম কন্ট্যাক্ট: শুধুমাত্র টেলিগ্রামে যোগাযোগ -->
+        <a class="btn" href="https://t.me/annonymous707" target="_blank" rel="noopener noreferrer" aria-label="ডেভেলপারের সাথে টেলিগ্রামে যোগাযোগ">
+          <span class="shine"></span>
+          <!-- টেলিগ্রাম আইকন (SVG) -->
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M9.03 15.47l-.38 5.33c.54 0 .78-.23 1.06-.5l2.55-2.45 5.28 3.86c.97.54 1.67.25 1.93-.9l3.5-16.38c.36-1.68-.61-2.34-1.72-1.93L1.5 9.6c-1.64.64-1.61 1.56-.28 1.98l5.32 1.66 12.35-7.8c.58-.35 1.1-.16.67.23L9.03 15.47z"/>
+          </svg>
+          <span>@annonymous707</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===========================================================
+       মেইন কনটেন্ট: সার্চ + রেসিপি গ্রিড
+       =========================================================== -->
+  <main class="container">
+    <!-- সার্চ বার: ইউজার-ফ্রেন্ডলি অ্যাক্টিভিটি (ফিল্টারিং) -->
+    <div class="searchbar">
+      <!-- সার্চ ইনপুট: নাম/উপকরণ/ট্যাগ অনুসারে ফিল্টার করবে -->
+      <input id="searchBox" class="search-input" type="search" placeholder="রেসিপি, উপকরণ বা ট্যাগ লিখে খুঁজুন…" aria-label="রেসিপি সার্চ" />
+      <!-- নোট: ডেভেলপার চাইলে ভবিষ্যতে আরও ফিল্টার অপশন (ক্যাটেগরি, ডিফিকাল্টি) যোগ করতে পারেন -->
+      <button id="clearSearch" class="btn" type="button" aria-label="সার্চ ক্লিয়ার করুন">
+        <span class="shine"></span>
+        <!-- ক্রস আইকন -->
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M18.3 5.71a1 1 0 010 1.41L13.41 12l4.89 4.88a1 1 0 01-1.41 1.42L12 13.41l-4.88 4.89a1 1 0 01-1.42-1.41L10.59 12 5.7 7.12A1 1 0 117.12 5.7L12 10.59l4.88-4.89a1 1 0 011.41 0z"/>
+        </svg>
+        <span>ক্লিয়ার</span>
+      </button>
+    </div>
+
+    <!-- নতুন ফিচার: ফিল্টার বাটনস -->
+    <div class="filter-container" id="filterContainer">
+      <button class="filter-btn active" data-filter="all">সব</button>
+      <button class="filter-btn" data-filter="বাংলা">বাংলা</button>
+      <button class="filter-btn" data-filter="মিষ্টি">মিষ্টি</button>
+      <button class="filter-btn" data-filter="মাছ">মাছ</button>
+      <button class="filter-btn" data-filter="মুরগি">মুরগি</button>
+      <button class="filter-btn" data-filter="ভেজ">ভেজ</button>
+    </div>
+
+    <!-- নতুন ফিচার: সর্ট ড্রপডাউন -->
+    <div class="sort-container">
+      <label for="sortDropdown">সাজান:</label>
+      <select id="sortDropdown" class="sort-dropdown">
+        <option value="default">ডিফল্ট</option>
+        <option value="rating-high">রেটিং (বেশি থেকে কম)</option>
+        <option value="rating-low">রেটিং (কম থেকে বেশি)</option>
+        <option value="time-short">সময় (কম থেকে বেশি)</option>
+        <option value="time-long">সময় (বেশি থেকে কম)</option>
+        <option value="title-asc">নাম (A-Z)</option>
+        <option value="title-desc">নাম (Z-A)</option>
+      </select>
+    </div>
+
+    <!-- রেসিপি গ্রিড: এখানে সমস্ত কার্ড অটো-রেন্ডার হবে -->
+    <section id="grid" class="grid" aria-live="polite" aria-busy="false"></section>
+
+    <!-- নো রেজাল্টস টেমপ্লেট -->
+    <template id="emptyTpl">
+      <div class="empty">দুঃখিত, আপনার খোঁজার সাথে মিলিয়ে কোন রেসিপি পাওয়া যায়নি।</div>
+    </template>
+  </main>
+
+  <!-- ===========================================================
+       রেসিপি ডিটেইলস মোডাল
+       =========================================================== -->
+  <div id="recipeModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle" class="modal-title"></h2>
+        <button class="modal-close" aria-label="বন্ধ করুন">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <img id="modalImage" class="modal-image" src="" alt="">
+          <div class="modal-rating">
+            <div id="modalStars" class="stars"></div>
+            <span id="modalRating"></span>
+          </div>
+          <div class="modal-meta">
+            <span id="modalTime" class="chip"></span>
+            <span id="modalDifficulty" class="chip"></span>
+          </div>
+          <h3>উপকরণ</h3>
+          <ul id="modalIngredients"></ul>
+          
+          <!-- নতুন ফিচার: মোডাল অ্যাকশন বাটনস -->
+          <div class="modal-actions">
+            <button class="modal-action-btn" id="copyBtn">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+              </svg>
+              কপি করুন
+            </button>
+            <button class="modal-action-btn" id="printBtn">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+              </svg>
+              প্রিন্ট করুন
+            </button>
+            <button class="modal-action-btn" id="shareBtn">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+              </svg>
+              শেয়ার করুন
+            </button>
+          </div>
+        </div>
+        <div class="modal-section">
+          <h3>প্রস্তুত প্রণালী</h3>
+          <ol id="modalSteps"></ol>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn modal-close-btn">
+          <span class="shine"></span>
+          <span>বন্ধ করুন</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- নতুন ফিচার: ফ্লোটিং অ্যাকশন বাটন (FAB) -->
+  <button id="scrollToTop" class="fab" aria-label="উপরে যান">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+    </svg>
+  </button>
+
+  <!-- ===========================================================
+       ফুটার: ডেভেলপার ক্রেডিট
+       =========================================================== -->
+  <footer class="container">
+    <div>© <span id="year"></span> Kitchen Fever</div>
+    <div class="signature" aria-label="ডেভেলপার স্বাক্ষর">Made With SP Team</div>
+  </footer>
+
+  <script>
+    "use strict";
+    // ===========================================================
+    // সমস্ত কোড ব্লকে বাংলায় মন্তব্য দেয়া হয়েছে যাতে সহজে বুঝে এডিট করা যায়
+    // ===========================================================
+
+    // -----------------------------------------------------------
+    // ইউটিলিটি: নিরাপদ DOM সিলেক্টর
+    // -----------------------------------------------------------
+    const $ = (sel, ctx = document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
+    // -----------------------------------------------------------
+    // থিম ম্যানেজমেন্ট: ডিফল্ট ডার্ক, লোকালস্টোরেজে সংরক্ষণ
+    // -----------------------------------------------------------
+    const THEME_KEY = "kf-theme";
+    const themeToggleBtn = $("#themeToggle");
+    const themeIcon = $("#themeIcon");
+
+    function setTheme(theme) {
+      // theme: 'dark' | 'light'
+      document.body.setAttribute("data-theme", theme);
+      localStorage.setItem(THEME_KEY, theme);
+      // আইকন আপডেট: লাইট থিম হলে সূর্য, ডার্ক থিম হলে চাঁদ
+      themeIcon.innerHTML = theme === "light"
+        ? '<path d="M12 4a1 1 0 011 1v1a1 1 0 11-2 0V5a1 1 0 011-1zm0 13a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5 11a1 1 0 010 2H4a1 1 0 110-2h1zm16 0a1 1 0 010 2h-1a1 1 0 110-2h1zM6.34 6.34a1 1 0 011.41 0l.7.7a1 1 0 01-1.41 1.41l-.7-.7a1 1 0 010-1.41zm10.6 10.6a1 1 0 011.41 0l.7.7a1 1 0 01-1.41 1.41l-.7-.7a1 1 0 010-1.41zM6.34 17.66a1 1 0 010 1.41l-.7.7a1 1 0 11-1.41-1.41l.7-.7a1 1 0 011.41 0zm10.6-10.6a1 1 0 010 1.41l-.7.7a1 1 0 01-1.41-1.41l.7-.7a1 1 0 011.41 0zM12 7a5 5 0 100 10 5 5 0 000-10z"/>'
+        : '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+      // থিম কালার মেটা আপডেট (মোবাইল ব্রাউজারের টপবার)
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) metaTheme.setAttribute("content", getComputedStyle(document.body).getPropertyValue("--bg-1").trim());
+    }
+
+    function initTheme() {
+      // ডিফল্ট: ডার্ক
+      const stored = localStorage.getItem(THEME_KEY);
+      setTheme(stored || "dark");
+    }
+
+    themeToggleBtn?.addEventListener("click", () => {
+      const current = document.body.getAttribute("data-theme") || "dark";
+      setTheme(current === "dark" ? "light" : "dark");
+    });
+
+    // -----------------------------------------------------------
+    // বাবল অ্যানিমেশন
+    // -----------------------------------------------------------
+    const canvas = $("#bubbleCanvas");
+    const ctx = canvas.getContext("2d");
+    let bubbles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    class Bubble {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + Math.random() * 100;
+        this.radius = Math.random() * 20 + 5;
+        this.speed = Math.random() * 2 + 0.5;
+        this.opacity = Math.random() * 0.3 + 0.1;
+        this.colorIndex = Math.floor(Math.random() * 3);
+        this.angle = Math.random() * Math.PI * 2;
+        this.angleSpeed = Math.random() * 0.02 - 0.01;
+      }
+
+      update() {
+        this.y -= this.speed;
+        this.x += Math.sin(this.angle) * 0.5;
+        this.angle += this.angleSpeed;
+
+        if (this.y < -this.radius) {
+          this.y = canvas.height + this.radius;
+          this.x = Math.random() * canvas.width;
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        
+        const colors = [
+          `rgba(0, 229, 255, ${this.opacity})`,
+          `rgba(255, 61, 129, ${this.opacity})`,
+          `rgba(124, 255, 193, ${this.opacity})`
+        ];
+        
+        ctx.fillStyle = colors[this.colorIndex];
+        ctx.fill();
+        
+        // গ্লো ইফেক্ট
+        ctx.shadowColor = colors[this.colorIndex];
+        ctx.shadowBlur = 15;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    function initBubbles() {
+      bubbles = [];
+      const bubbleCount = Math.floor((canvas.width * canvas.height) / 15000);
+      for (let i = 0; i < bubbleCount; i++) {
+        bubbles.push(new Bubble());
+      }
+    }
+
+    function animateBubbles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      bubbles.forEach(bubble => {
+        bubble.update();
+        bubble.draw();
+      });
+      
+      requestAnimationFrame(animateBubbles);
+    }
+
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      initBubbles();
+    });
+
+    // -----------------------------------------------------------
+    // নতুন ফিচার: ফ্লোটিং অ্যাকশন বাটন (FAB)
+    // -----------------------------------------------------------
+    const scrollToTopBtn = $("#scrollToTop");
+    
+    // স্ক্রল ইভেন্ট লিসেনার
+    window.addEventListener("scroll", () => {
+      if (window.pageYOffset > 300) {
+        scrollToTopBtn.classList.add("visible");
+      } else {
+        scrollToTopBtn.classList.remove("visible");
+      }
+    });
+    
+    // স্ক্রল টু টপ ফাংশন
+    scrollToTopBtn.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
+
+    // -----------------------------------------------------------
+    // রেসিপি ডেটা (ডেভেলপার: এখানেই রেসিপি যোগ/সম্পাদনা করুন)
+    // -----------------------------------------------------------
+    /*
+      কিভাবে নতুন রেসিপি যোগ করবেন:
+      1) নিচের recipes অ্যারেতে একটি নতুন অবজেক্ট যোগ করুন:
+         {
+           id: "unique-id",
+           title: "রেসিপির নাম",
+           rating: 4.8, // 0-5 এর মধ্যে
+           image: "ছবির-URL-অথবা-লোকাল-পাথ",
+           time: "প্রস্তুত/রান্নার সময়",
+           difficulty: "সহজ/মাঝারি/কঠিন",
+           tags: ["বাংলা", "ডেসার্ট"], // সার্চ ফিল্টারে সহায়ক
+           ingredients: [
+             "উপকরণ ১",
+             "উপকরণ ২",
+           ],
+           steps: [
+             "ধাপ ১",
+             "ধাপ ২",
+           ]
+         }
+      2) ছবি যদি না থাকে, image ফিল্ড খালি রাখলে ডিফল্ট প্লেসহোল্ডার দেখাবে।
+      3) ইউজার ইন্টারফেসে 'বিস্তারিত দেখুন' বাটনে ক্লিক করলে উপকরণ + প্রণালী সুন্দর অ্যানিমেশন সহ প্রদর্শিত হবে।
+      নোট: ইউজাররা সাইটে নিজে থেকে রেসিপি যোগ করতে পারবে না — শুধু ডেভেলপার কোডে যোগ করতে পারবেন।
+    */
+    const recipes = [
+      {
+        id: "chicken-biryani",
+        title: "চিকেন বিরিয়ানি",
+        rating: 4.8,
+        image: "https://images.unsplash.com/photo-1604908177319-690c2b7f3a20?auto=format&fit=crop&w=1200&q=60",
+        time: "প্রায় ১ ঘন্টা ২০ মিনিট",
+        difficulty: "মাঝারি",
+        tags: ["বিরিয়ানি", "মুরগি", "বাংলা", "রাইস"],
+        ingredients: [
+          "বাসমতি চাল ৫০০ গ্রাম",
+          "মুরগির মাংস ৭০০ গ্রাম (টুকরো করা)",
+          "পেঁয়াজ ৩টি (ভাজা-বারিশ্তা)",
+          "দই ১/২ কাপ",
+          "আদা-রসুন বাটা ২ টেবিল চামচ",
+          "গরম মসলা ১ চা চামচ",
+          "লবণ পরিমাণমতো",
+          "তেল/ঘি ৪-৫ টেবিল চামচ",
+          "কাঁচা মরিচ ৪-৫টি",
+          "জাফরান দুধ ২ টেবিল চামচ"
+        ],
+        steps: [
+          "চাল ভালো করে ধুয়ে ৩০ মিনিট ভিজিয়ে রাখুন।",
+          "মুরগির মাংসে দই, আদা-রসুন বাটা, লবণ, গরম মসলা ও অল্প তেল দিয়ে ৩০ মিনিট মেরিনেট করুন।",
+          "পাত্রে ঘি/তেল গরম করে বারিশ্তা পেঁয়াজের অর্ধেক দিয়ে মুরগি দিয়ে ভুনুন।",
+          "অন্য পাত্রে চাল ৭০% সেদ্ধ করে ছেঁকে নিন।",
+          "স্তরে স্তরে মুরগি, চাল, বারিশ্তা, জাফরান দুধ ও কাঁচা মরিচ দিয়ে দমে রাখুন (২০-২৫ মিনিট)।",
+          "দম শেষ হলে আলতোভাবে মিশিয়ে পরিবেশন করুন।"
+        ]
+      },
+      {
+        id: "ilish-jhol",
+        title: "ইলিশ মাছের ঝোল",
+        rating: 4.7,
+        image: "https://images.unsplash.com/photo-1625944658481-5b3e5f2f79b5?auto=format&fit=crop&w=1200&q=60",
+        time: "৩৫-৪৫ মিনিট",
+        difficulty: "সহজ",
+        tags: ["মাছ", "বাংলা", "গ্রেভি"],
+        ingredients: [
+          "ইলিশ মাছ ৬ পিস",
+          "সরিষা বাটা ২ টেবিল চামচ",
+          "সরিষার তেল ৩ টেবিল চামচ",
+          "কাঁচা মরিচ ৪টি চেরা",
+          "হলুদ ও লবণ পরিমাণমতো",
+          "পানি ১.৫ কাপ"
+        ],
+        steps: [
+          "মাছ ধুয়ে লবণ-হলুদ মাখিয়ে রাখুন।",
+          "কড়াইতে সরিষার তেল গরম করে ধোঁয়া উঠলে আঁচ কমান।",
+          "সরিষা বাটা, হলুদ, লবণ ও পানি দিয়ে ফুটে উঠলে মাছ দিন।",
+          "ঢেকে মাঝারি আঁচে ৮-১০ মিনিট রান্না করুন।",
+          "শেষে কাঁচা মরিচ দিয়ে আরও ২ মিনিট দমে রাখুন।"
+        ]
+      },
+      {
+        id: "khichuri",
+        title: "ভেজিটেবল খিচুড়ি",
+        rating: 4.6,
+        image: "https://images.unsplash.com/photo-1604908554165-dc64a0db1214?auto=format&fit=crop&w=1200&q=60",
+        time: "৪৫-৫৫ মিনিট",
+        difficulty: "সহজ",
+        tags: ["রাইস", "ভেজ", "বাংলা"],
+        ingredients: [
+          "চাল ১ কাপ",
+          "মুগ ডাল ১ কাপ",
+          "আলু ১টি কিউব করে",
+          "গাজর ১টি কুচি",
+          "মটরশুঁটি ১/২ কাপ",
+          "জিরা, তেজপাতা, শুকনা লংকা",
+          "লবণ, হলুদ, তেল/ঘি"
+        ],
+        steps: [
+          "ডাল ভেজে ধুয়ে নিন, চাল ধুয়ে নিন।",
+          "কড়াইতে তেল/ঘি দিয়ে জিরা-তেজপাতা-শুকনা লংকা ফোড়ন দিন।",
+          "সবজি দিয়ে নেড়ে উপকরণ গুলো ভুনুন।",
+          "চাল-ডাল দিয়ে ৪ কাপ পানি, হলুদ ও লবণ দিয়ে রান্না করুন।",
+          "নরম হয়ে এলে ঘি দিয়ে নামিয়ে দিন।"
+        ]
+      },
+      {
+        id: "rosogolla",
+        title: "রসগোল্লা",
+        rating: 4.9,
+        image: "https://images.unsplash.com/photo-1604908812807-0d1e1f8890f9?auto=format&fit=crop&w=1200&q=60",
+        time: "১ ঘন্টা",
+        difficulty: "মাঝারি",
+        tags: ["মিষ্টি", "ডেসার্ট", "বাংলা"],
+        ingredients: [
+          "ছানা ৩০০ গ্রাম",
+          "ময়দা ১ চা চামচ",
+          "চিনি ১.৫ কাপ",
+          "পানি ৪ কাপ",
+          "এলাচ ২টি"
+        ],
+        steps: [
+          "ছানায় সামান্য ময়দা দিয়ে ভালোভাবে মথে নরম ডো তৈরি করুন।",
+          "ছোট ছোট বল বানিয়ে নিন।",
+          "পাত্রে পানি ও চিনি দিয়ে সিরা তৈরি করুন।",
+          "সিরা ফুটে উঠলে বলগুলো দিয়ে ঢেকে দিন।",
+          "মাঝারি আঁচে ২০-২৫ মিনিট রান্না করুন, ফুলে উঠলে নামান।"
+        ]
+      },
+      {
+        id: "mishti-puli",
+        title: "মিষ্টি পুলি",
+        rating: 4.5,
+        image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1200&q=60",
+        time: "১ ঘন্টা ৩০ মিনিট",
+        difficulty: "কঠিন",
+        tags: ["মিষ্টি", "পিঠা", "বাংলা"],
+        ingredients: [
+          "চালের গুঁড়া ২ কাপ",
+          "খেজুরের গুড় ১ কাপ",
+          "নারকেল কুরিয়ানো ১ কাপ",
+          "দুধ ১ কাপ",
+          "এলাচ ২-৩টি",
+          "তেল ১ কাপ"
+        ],
+        steps: [
+          "চালের গুঁড়া দিয়ে নরম মণ্ড তৈরি করুন।",
+          "নারকেল কুরিয়ানো ও গুড় দিয়ে পুর তৈরি করুন।",
+          "মণ্ড থেকে ছোট ছোট লেচি নিয়ে তাতে পুর ভরে পুলি তৈরি করুন।",
+          "তেল গরম করে পুলিগুলো ভেজে নিন।",
+          "দুধ, গুড় ও এলাচ দিয়ে সিরা তৈরি করে পুলিগুলো সিরায় ডুবিয়ে রাখুন।"
+        ]
+      }
+    ];
+
+    // -----------------------------------------------------------
+    // নতুন ফিচার: ফিল্টার ফাংশনালিটি
+    // -----------------------------------------------------------
+    const filterContainer = $("#filterContainer");
+    let activeFilter = "all";
+    
+    // ফিল্টার বাটন ইভেন্ট লিসেনার
+    filterContainer.addEventListener("click", (e) => {
+      if (e.target.classList.contains("filter-btn")) {
+        // সব ফিল্টার বাটন থেকে active ক্লাস সরান
+        $$(".filter-btn").forEach(btn => btn.classList.remove("active"));
+        
+        // ক্লিক করা বাটনে active ক্লাস যোগ করুন
+        e.target.classList.add("active");
+        
+        // অ্যাকটিভ ফিল্টার আপডেট করুন
+        activeFilter = e.target.getAttribute("data-filter");
+        
+        // রেসিপি রেন্ডার করুন
+        renderFilteredRecipes();
+      }
+    });
+
+    // -----------------------------------------------------------
+    // নতুন ফিচার: সর্ট ফাংশনালিটি
+    // -----------------------------------------------------------
+    const sortDropdown = $("#sortDropdown");
+    let activeSort = "default";
+    
+    // সর্ট ড্রপডাউন ইভেন্ট লিসেনার
+    sortDropdown.addEventListener("change", (e) => {
+      activeSort = e.target.value;
+      renderFilteredRecipes();
+    });
+
+    // -----------------------------------------------------------
+    // নতুন ফিচার: ফিল্টার এবং সর্ট করে রেসিপি রেন্ডার করার ফাংশন
+    // -----------------------------------------------------------
+    function renderFilteredRecipes() {
+      // প্রথমে সার্চ ফিল্টার করুন
+      let filtered = filterRecipes(searchInput.value);
+      
+      // তারপর ক্যাটাগরি ফিল্টার করুন
+      if (activeFilter !== "all") {
+        filtered = filtered.filter(recipe => 
+          recipe.tags && recipe.tags.includes(activeFilter)
+        );
+      }
+      
+      // তারপর সর্ট করুন
+      switch (activeSort) {
+        case "rating-high":
+          filtered.sort((a, b) => b.rating - a.rating);
+          break;
+        case "rating-low":
+          filtered.sort((a, b) => a.rating - b.rating);
+          break;
+        case "time-short":
+          filtered.sort((a, b) => {
+            // সময় স্ট্রিং থেকে মিনিট বের করার চেষ্টা
+            const getTimeInMinutes = (timeStr) => {
+              const match = timeStr.match(/(\d+)/);
+              return match ? parseInt(match[0]) : 0;
+            };
+            return getTimeInMinutes(a.time) - getTimeInMinutes(b.time);
+          });
+          break;
+        case "time-long":
+          filtered.sort((a, b) => {
+            const getTimeInMinutes = (timeStr) => {
+              const match = timeStr.match(/(\d+)/);
+              return match ? parseInt(match[0]) : 0;
+            };
+            return getTimeInMinutes(b.time) - getTimeInMinutes(a.time);
+          });
+          break;
+        case "title-asc":
+          filtered.sort((a, b) => a.title.localeCompare(b.title, 'bn'));
+          break;
+        case "title-desc":
+          filtered.sort((a, b) => b.title.localeCompare(a.title, 'bn'));
+          break;
+      }
+      
+      renderRecipes(filtered);
+    }
+
+    // -----------------------------------------------------------
+    // স্টার SVG (ফিল, হাফ, এম্পটি) — পুনঃব্যবহারযোগ্য
+    // -----------------------------------------------------------
+    const STAR_PATH = 'M12 .587l3.668 7.431 8.2 1.191-5.934 5.786 1.402 8.173L12 18.897l-7.336 3.871 1.402-8.173L.132 9.209l8.2-1.191z';
+    function starSVG(type = "full", title = "") {
+      // type: full | half | empty
+      const fill = type === "full" ? "currentColor" : "none";
+      const stroke = "currentColor";
+      const maskId = `mask-${type}-${Math.random().toString(36).slice(2,8)}`;
+      if (type === "half") {
+        return `
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <defs>
+              <linearGradient id="${maskId}">
+                <stop offset="50%" stop-color="currentColor"></stop>
+                <stop offset="50%" stop-color="transparent"></stop>
+              </linearGradient>
+            </defs>
+            <path d="${STAR_PATH}" transform="scale(1.0) translate(0,1)" fill="url(#${maskId})" stroke="${stroke}" stroke-width="1"></path>
+          </svg>`;
+      }
+      if (type === "empty") {
+        return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${STAR_PATH}" transform="scale(1.0) translate(0,1)" fill="none" stroke="${stroke}" stroke-width="1"></path></svg>`;
+      }
+      return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${STAR_PATH}" transform="scale(1.0) translate(0,1)" fill="${fill}" stroke="${stroke}" stroke-width="0"></path></svg>`;
+    }
+    function renderStars(rating = 0) {
+      const full = Math.floor(rating);
+      const half = rating - full >= 0.5 ? 1 : 0;
+      const empty = 5 - full - half;
+      return `
+        <span class="stars" aria-label="রেটিং: ${rating}/5">
+          ${"<span>"+starSVG("full")+"</span>".repeat(full)}
+          ${half ? "<span>"+starSVG("half")+"</span>" : ""}
+          ${"<span>"+starSVG("empty")+"</span>".repeat(empty)}
+        </span>
+      `;
+    }
+
+    // -----------------------------------------------------------
+    // ইমেজ ফallback: ছবি লোডে সমস্যা হলে প্লেসহোল্ডার ব্যবহার
+    // -----------------------------------------------------------
+    function onImageError(ev, title = "ছবি") {
+      const img = ev.target;
+      img.alt = "ছবি পাওয়া যায়নি";
+      img.removeAttribute("srcset");
+      img.src = `data:image/svg+xml;utf8,
+        <svg xmlns='http://www.w3.org/2000/svg' width='800' height='500'>
+          <defs>
+            <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+              <stop offset='0' stop-color='%2300e5ff'/>
+              <stop offset='1' stop-color='%23ff3d81'/>
+            </linearGradient>
+          </defs>
+          <rect width='100%%' height='100%%' fill='%23111a33'/>
+          <rect x='20' y='20' width='760' height='460' rx='18' fill='url(%23g)' fill-opacity='0.15' stroke='%23a7b4d6' stroke-opacity='0.35'/>
+          <text x='50%%' y='50%%' dominant-baseline='middle' text-anchor='middle' fill='%23a7b4d6' font-size='28' font-family='Verdana'>${title}</text>
+        </svg>`;
+    }
+
+    // -----------------------------------------------------------
+    // নতুন ফিচার: ফেভারিট ফাংশনালিটি
+    // -----------------------------------------------------------
+    const FAVORITES_KEY = "kf-favorites";
+    let favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+    
+    // ফেভারিট টগল ফাংশন
+    function toggleFavorite(recipeId) {
+      const index = favorites.indexOf(recipeId);
+      if (index > -1) {
+        favorites.splice(index, 1);
+      } else {
+        favorites.push(recipeId);
+      }
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+      
+      // ফেভারিট বাটন আপডেট করুন
+      updateFavoriteButtons();
+    }
+    
+    // ফেভারিট বাটন আপডেট ফাংশন
+    function updateFavoriteButtons() {
+      $$(`.favorite-btn`).forEach(btn => {
+        const recipeId = btn.getAttribute("data-id");
+        if (favorites.includes(recipeId)) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
+    }
+
+    // -----------------------------------------------------------
+    // কার্ড টেমপ্লেট জেনারেটর
+    // -----------------------------------------------------------
+    function recipeCardTemplate(recipe) {
+      // নিরাপত্তার জন্য কিছু ফিল্ড ডিফল্ট
+      const {
+        id = crypto.randomUUID?.() || ("r-" + Math.random().toString(36).slice(2, 9)),
+        title = "রেসিপি",
+        rating = 0,
+        image = "",
+        time = "",
+        difficulty = "",
+        tags = [],
+        ingredients = [],
+        steps = [],
+      } = recipe || {};
+
+      const imgHtml = `
+        <div class="card-media">
+          <img src="${image || ""}" alt="${title} এর ছবি" loading="lazy" decoding="async"
+               onerror="onImageError(event, '${title.replace(/'/g, "\\'")}')">
+          <div class="rating-badge" title="রেটিং">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${STAR_PATH}"/></svg>
+            <span>${rating.toFixed(1)}</span>
+          </div>
+          <!-- নতুন ফিচার: ফেভারিট বাটন -->
+          <button class="favorite-btn tooltip ${favorites.includes(id) ? 'active' : ''}" data-id="${id}" data-tooltip="ফেভারিট" aria-label="ফেভারিট">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
+        </div>`;
+
+      const tagsHtml = tags.slice(0, 3).map(t => `<span class="chip">#${t}</span>`).join(" ");
+
+      return `
+        <article class="recipe-card reveal" id="${id}">
+          ${imgHtml}
+          <div class="card-body">
+            <h2 class="recipe-title">${title}</h2>
+            <div class="meta">
+              <span>${renderStars(rating)}</span>
+              ${time ? `<span class="chip" title="সময়">${time}</span>` : ""}
+              ${difficulty ? `<span class="chip" title="কঠিনতা">${difficulty}</span>` : ""}
+            </div>
+            <div class="meta">
+              ${tagsHtml}
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn btn-detail details-btn" type="button" data-id="${id}" aria-expanded="false">
+              <span class="shine"></span>
+              <!-- ডিফল্ট টেক্সট: বিস্তারিত দেখুন -->
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 5l7 7-7 7-1.41-1.41L15.17 13H5v-2h10.17L10.59 6.41 12 5z"/></svg>
+              <span class="details-text">বিস্তারিত দেখুন</span>
+            </button>
+            <a class="btn" style="--glow: var(--accent-3)" href="#top" aria-label="পৃষ্ঠার উপরে যান">
+              <span class="shine"></span>
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.59 5.58L20 12l-8-8-8 8z"/></svg>
+              <span>উপরে</span>
+            </a>
+          </div>
+        </article>
+      `;
+    }
+
+    // -----------------------------------------------------------
+    // রেন্ডার ফাংশন: গ্রিডে রেসিপি দেখানো
+    // -----------------------------------------------------------
+    const grid = $("#grid");
+    const emptyTpl = $("#emptyTpl");
+    function renderRecipes(list = []) {
+      if (!grid) return;
+      grid.setAttribute("aria-busy", "true");
+      try {
+        if (!list.length) {
+          grid.innerHTML = "";
+          const emptyNode = emptyTpl.content.cloneNode(true);
+          grid.appendChild(emptyNode);
+          return;
+        }
+        // পারফরম্যান্সের জন্য ফ্র্যাগমেন্ট ব্যবহার
+        const frag = document.createDocumentFragment();
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = list.map(recipeCardTemplate).join("");
+        frag.append(...Array.from(wrapper.childNodes));
+        grid.innerHTML = "";
+        grid.appendChild(frag);
+        // রেন্ডার শেষে স্ক্রল-রিভিল সেটআপ
+        setupReveal();
+        // ফেভারিট বাটন আপডেট করুন
+        updateFavoriteButtons();
+      } catch (err) {
+        console.error("রেন্ডারিং ত্রুটি:", err);
+        grid.innerHTML = `<div class="empty">কিছু সমস্যা হয়েছে। অনুগ্রহ করে পরে চেষ্টা করুন।</div>`;
+      } finally {
+        grid.setAttribute("aria-busy", "false");
+      }
+    }
+
+    // -----------------------------------------------------------
+    // মোডাল ফাংশনালিটি
+    // -----------------------------------------------------------
+    const modal = $("#recipeModal");
+    const modalTitle = $("#modalTitle");
+    const modalImage = $("#modalImage");
+    const modalStars = $("#modalStars");
+    const modalRating = $("#modalRating");
+    const modalTime = $("#modalTime");
+    const modalDifficulty = $("#modalDifficulty");
+    const modalIngredients = $("#modalIngredients");
+    const modalSteps = $("#modalSteps");
+    const copyBtn = $("#copyBtn");
+    const printBtn = $("#printBtn");
+    const shareBtn = $("#shareBtn");
+
+    function openModal(recipeId) {
+      const recipe = recipes.find(r => r.id === recipeId);
+      if (!recipe) return;
+
+      // মোডালে ডাটা ফিল করুন
+      modalTitle.textContent = recipe.title;
+      modalImage.src = recipe.image || "";
+      modalImage.alt = `${recipe.title} এর ছবি`;
+      modalStars.innerHTML = renderStars(recipe.rating);
+      modalRating.textContent = recipe.rating.toFixed(1);
+      modalTime.textContent = recipe.time || "";
+      modalDifficulty.textContent = recipe.difficulty || "";
+      
+      // উপকরণ লিস্ট
+      modalIngredients.innerHTML = recipe.ingredients
+        .map(ing => `<li>${ing}</li>`)
+        .join("");
+      
+      // ধাপগুলো লিস্ট
+      modalSteps.innerHTML = recipe.steps
+        .map((step, idx) => `<li><strong>ধাপ ${idx+1}:</strong> ${step}</li>`)
+        .join("");
+
+      // মোডাল দেখান
+      modal.style.display = "block";
+      document.body.style.overflow = "hidden"; // স্ক্রল বন্ধ করুন
+    }
+
+    function closeModal() {
+      modal.style.display = "none";
+      document.body.style.overflow = ""; // স্ক্রল আবার চালু করুন
+    }
+
+    // মোডাল ক্লোজ ইভেন্ট
+    $$(".modal-close, .modal-close-btn").forEach(btn => {
+      btn.addEventListener("click", closeModal);
+    });
+
+    // মোডাল বাইরে ক্লিক করলে বন্ধ হবে
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    // বিস্তারিত বাটন ক্লিক ইভেন্ট
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest(".details-btn");
+      if (!btn) return;
+      const recipeId = btn.getAttribute("data-id");
+      if (recipeId) {
+        openModal(recipeId);
+      }
+      
+      // ফেভারিট বাটন ক্লিক ইভেন্ট
+      const favBtn = e.target.closest(".favorite-btn");
+      if (favBtn) {
+        const recipeId = favBtn.getAttribute("data-id");
+        toggleFavorite(recipeId);
+      }
+    });
+
+    // -----------------------------------------------------------
+    // নতুন ফিচার: মোডাল অ্যাকশন বাটনস
+    // -----------------------------------------------------------
+    
+    // কপি বাটন
+    copyBtn.addEventListener("click", () => {
+      const recipeTitle = modalTitle.textContent;
+      const ingredients = Array.from(modalIngredients.querySelectorAll("li"))
+        .map(li => li.textContent)
+        .join("\n");
+      const steps = Array.from(modalSteps.querySelectorAll("li"))
+        .map(li => li.textContent)
+        .join("\n");
+      
+      const textToCopy = `${recipeTitle}\n\nউপকরণ:\n${ingredients}\n\nপ্রস্তুত প্রণালী:\n${steps}`;
+      
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        // সফল হলে ব্যবহারকারীকে জানান
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> কপি হয়েছে!`;
+        setTimeout(() => {
+          copyBtn.innerHTML = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error("কপি করতে ব্যর্থ:", err);
+      });
+    });
+    
+    // প্রিন্ট বাটন
+    printBtn.addEventListener("click", () => {
+      window.print();
+    });
+    
+    // শেয়ার বাটন
+    shareBtn.addEventListener("click", () => {
+      const recipeTitle = modalTitle.textContent;
+      const recipeUrl = window.location.href;
+      
+      if (navigator.share) {
+        // Web Share API সমর্থিত হলে
+        navigator.share({
+          title: recipeTitle,
+          text: `${recipeTitle} - Kitchen Fever থেকে`,
+          url: recipeUrl
+        }).catch(err => {
+          console.error("শেয়ার করতে ব্যর্থ:", err);
+        });
+      } else {
+        // Web Share API সমর্থিত না হলে URL কপি করুন
+        navigator.clipboard.writeText(recipeUrl).then(() => {
+          // সফল হলে ব্যবহারকারীকে জানান
+          const originalText = shareBtn.innerHTML;
+          shareBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> লিংক কপি হয়েছে!`;
+          setTimeout(() => {
+            shareBtn.innerHTML = originalText;
+          }, 2000);
+        }).catch(err => {
+          console.error("লিংক কপি করতে ব্যর্থ:", err);
+        });
+      }
+    });
+
+    // -----------------------------------------------------------
+    // সার্চ/ফিল্টার: টাইটেল/উপকরণ/ট্যাগ অনুযায়ী
+    // -----------------------------------------------------------
+    const searchInput = $("#searchBox");
+    const clearSearch = $("#clearSearch");
+
+    function normalize(str) {
+      return (str || "").toString().toLowerCase().trim();
+    }
+
+    function filterRecipes(query) {
+      const q = normalize(query);
+      if (!q) return recipes;
+      return recipes.filter(r => {
+        const inTitle = normalize(r.title).includes(q);
+        const inTags = (r.tags || []).some(t => normalize(t).includes(q));
+        const inIngredients = (r.ingredients || []).some(i => normalize(i).includes(q));
+        return inTitle || inTags || inIngredients;
+      });
+    }
+
+    let searchDebounce = 0;
+    function onSearchInput() {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        renderFilteredRecipes();
+      }, 120); // লাইট ডিবাউন্স
+    }
+    searchInput?.addEventListener("input", onSearchInput);
+    clearSearch?.addEventListener("click", () => {
+      if (searchInput) {
+        searchInput.value = "";
+        renderFilteredRecipes();
+        searchInput.focus();
+      }
+    });
+
+    // -----------------------------------------------------------
+    // স্ক্রল-রিভিল (IntersectionObserver সহ, নাহলে সুন্দরভাবে ডিগ্রেড)
+    // -----------------------------------------------------------
+    function setupReveal() {
+      const items = $$(".reveal", grid);
+      if (!("IntersectionObserver" in window)) {
+        items.forEach(el => el.classList.add("visible"));
+        return;
+      }
+      const io = new IntersectionObserver((entries, obs) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            obs.unobserve(entry.target);
+          }
+        }
+      }, { threshold: 0.12 });
+      items.forEach(el => io.observe(el));
+    }
+
+    // -----------------------------------------------------------
+    // ইনিট: বছর, থিম, রেন্ডার, বাবল অ্যানিমেশন
+    // -----------------------------------------------------------
+    function init() {
+      // বছর সেট
+      const y = $("#year");
+      if (y) y.textContent = new Date().getFullYear();
+
+      // থিম ইনিট
+      initTheme();
+
+      // ক্যানভাস ইনিট
+      resizeCanvas();
+      initBubbles();
+      animateBubbles();
+
+      // রেন্ডার
+      renderRecipes(recipes);
+
+      // গ্লোবাল ফallback ফাংশনগুলো window এ এক্সপোজ (onerror কলের জন্য)
+      window.onImageError = onImageError;
+    }
+
+    // DOM লোড হলে ইনিট
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
